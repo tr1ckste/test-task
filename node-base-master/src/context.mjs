@@ -43,4 +43,3 @@ export class ConnectionContext {
         this.#sessionContext = sessionContext;
     }
 }
-

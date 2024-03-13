@@ -6,6 +6,9 @@ import {Http2Transport} from "./transporters/http2-transport.mjs";
 import {readWholeStream} from "./utils/read-data.mjs";
 import {constants as http2Constants} from "http2";
 
+import { command } from "./commands/test.mjs";
+import { ConnectionContext } from "./context.mjs";
+
 const {
     HTTP2_HEADER_STATUS,
     HTTP_STATUS_NOT_FOUND
@@ -43,7 +46,6 @@ export class Multiplexer {
      * @type {string}
      */
     #serviceHeader = "service";
-
 
     #h1ReqListener = (req, res) => {
         // For now, it will just error out.
@@ -133,18 +135,20 @@ export class Multiplexer {
             transport.emit("end");
         }
         transport.emit("dataChunk", remainingBytes); // Since this emits directly dataChunk there's no need for a listener and re-emitter in the WSTransport.
-    }
+    };
 
     /**
      * @param {ServerHttp2Session}session
      */
-    #h2StreamListener = (session) => {
+    #h2StreamListener = (session, h2SessionData) => {
+        console.log('h2session')
         /**
          * @type {Map<bigint, any>}
          */
         const sessionTransports = new Map();
-        const sessionData = {};
+        console.log(h2SessionData);
         session.addListener("stream", async (stream, headers) => {
+            console.log('stream')
             if (headers[this.#commandHeader] === "NOTIFY") {
                 try {
                     const data = await readWholeStream(stream);
@@ -161,7 +165,12 @@ export class Multiplexer {
             }
 
             const streamId = randomBigIntNotInKeys(sessionTransports); // this one is only for notification purposes.
-            sessionTransports[streamId] = new Http2Transport(stream, headers, sessionData);
+            sessionTransports.set(streamId, new Http2Transport(stream, headers, h2SessionData));
+
+            const context = new ConnectionContext(h2SessionData);
+            command.handle(sessionTransports.get(streamId), context);
+
+            // initialize command that handles session transport
             // treat the continuation notifications right here, the rest will go to the service multiplexer.
         });
     };
@@ -180,11 +189,11 @@ export class Multiplexer {
         this.#serviceHeader = serviceHeader;
         this.#commandHeader = commandHeader;
         this.#attachListeners();
-    }
+    };
 
     #attachListeners() {
         this.#server.addListener("wsConn", this.#wsConnectionListener);
         this.#server.addListener("h1req", this.#h1ReqListener);
-        this.#server.addListener("h2session", this.#h2StreamListener);
-    }
+        this.#server.addListener("h2Session", this.#h2StreamListener);
+    };
 }

@@ -111,7 +111,6 @@ export class H2Server extends EventEmitter {
         this.#http2Server.on("close", () => this.emit("h2Close"));
         this.#http2Server.on("error", (err) => this.emit("h2Error", err));
         this.#http2Server.on("tlsClientError", (err) => this.emit("h2TlsClientError", err));
-
     }
 
     listen(port, host) {

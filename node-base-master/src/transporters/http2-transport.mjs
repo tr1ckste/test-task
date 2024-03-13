@@ -78,7 +78,7 @@ export class Http2Transport extends DataTransport {
         this.#http2Stream.removeListener("data", this.#streamDataListener);
         this.#http2Stream.removeListener("error", this.#streamErrorListener);
         this.#http2Stream.removeListener("end", this.#streamEndListener);
-    }
+    };
 
     /**
      *
@@ -88,7 +88,7 @@ export class Http2Transport extends DataTransport {
     constructor(http2Stream, incomingHeaders, sessionContext) {
         super(new ConnectionContext(sessionContext));
         this.#http2Stream = http2Stream;
-        this.#incomingHeaders = Object.fromEntries(incomingHeaders.entries ? incomingHeaders.entries() : Object.getEntries(incomingHeaders));
+        this.#incomingHeaders = Object.fromEntries(incomingHeaders.entries ? incomingHeaders.entries() : Object.entries(incomingHeaders));
         Object.freeze(this.#incomingHeaders);
     }
 
@@ -148,7 +148,7 @@ export class Http2Transport extends DataTransport {
                 this.#http2Stream.write(CBOREncoder.encode(dataObject));
                 break;
             case "text/html":
-            // no break;
+                this.#http2Stream.write(dataObject.toString());
             default: // probably binary
                 // This may throw if the object is not writeable ( Typed Array, Buffer or String, or it has no string serialization method).
                 this.#http2Stream.write(dataObject);

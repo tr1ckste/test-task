@@ -56,7 +56,7 @@ export class WsTransport extends DataTransport {
         super(new ConnectionContext(sessionContext));
         this.#wsConn = wsConn;
         this.#streamId = streamId;
-        this.#incomingHeaders = Object.fromEntries(incomingHeaders.entries ? incomingHeaders.entries() : Object.getEntries(incomingHeaders));
+        this.#incomingHeaders = Object.fromEntries(incomingHeaders.entries ? incomingHeaders.entries() : Object.entries(incomingHeaders));
     }
 
     /**
@@ -82,7 +82,7 @@ export class WsTransport extends DataTransport {
     #write(data) {
         /**
          *
-         * @type {MultiplexerMessage}e
+         * @type {MultiplexerMessage}
          */
         const outMultiplexerMessage = {
             stId: this.#streamId,
@@ -97,16 +97,16 @@ export class WsTransport extends DataTransport {
         }
         switch (this.#outgoingHeaders) {
             case "application/json":
-                // this.#wsConn.send(JSON.stringify(dataObject));
+                this.#wsConn.send(JSON.stringify(dataObject));
                 break;
             case "application/cbor":
-                this.#http2Stream.write(CBOREncoder.encode(dataObject));
+                this.#wsConn.send(CBOREncoder.encode(dataObject));
                 break;
             case "text/html":
-            // no break;
+                this.#wsConn.send(dataObject.toString())
             default: // probably binary
                 // This may throw if the object is not writeable ( Typed Array, Buffer or String, or it has no string serialization method).
-                this.#http2Stream.write(dataObject);
+                this.#wsConn.send(dataObject);
         }
     }
 }

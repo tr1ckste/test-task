@@ -148,7 +148,7 @@ class Http2TransportBackup extends DataTransport {
     constructor(http2Stream, incomingHeaders) {
         super();
         this.#http2Stream = http2Stream;
-        this.#incomingHeaders = Object.fromEntries(incomingHeaders.entries ? incomingHeaders.entries() : Object.getEntries(incomingHeaders));
+        this.#incomingHeaders = Object.fromEntries(incomingHeaders.entries ? incomingHeaders.entries() : Object.entries(incomingHeaders));
     }
 
     /**
