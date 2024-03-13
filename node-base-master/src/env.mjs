@@ -1,3 +1,4 @@
+/** Replaces dotenv lib in order to avoid using extra packages. */
 const ENV_VARIABLES = {
   HOST: "localhost",
   PORT: "5000",

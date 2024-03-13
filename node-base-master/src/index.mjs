@@ -3,8 +3,8 @@ import path from "path";
 import { H2Server } from "./server.mjs";
 import { Multiplexer } from "./multiplexer.mjs";
 import { initEnv } from "./env.mjs";
-
 initEnv();
+
 const {
   HOST,
   PORT,

@@ -1,7 +1,10 @@
 import { Command } from "../command.mjs";
-const { MongoClient, ServerApiVersion } = require("mongodb");
+import { initEnv } from "../env.mjs";
+initEnv();
+import { MongoClient, ServerApiVersion } from "mongodb";
 // Replace the placeholder with your Atlas connection string
-const uri = "<connection string>";
+const uri = process.env.MONGO_CONNECTION_URL;
+console.log(process.env.MONGO_CONNECTION_URL)
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri,  {
     serverApi: {
@@ -11,9 +14,6 @@ const client = new MongoClient(uri,  {
     }
   }
 );
-
-const conn = mongoose.createConnection('mongodb://localhost/testA');
-const conn2 = mongoose.createConnection('mongodb://localhost/testB');
 
 export const command = new Command({
   handler: (dataTransport, context) => {
