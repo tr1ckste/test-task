@@ -26,7 +26,6 @@ export default new Command({
             context.sessionSearchParams
         );
         const needToResetCursor = !(searchParamsIsEqual && context.cursor);
-        console.log(needToResetCursor);
 
         if (needToResetCursor) createFilmCursorAndSetItToCtx(context);
 
