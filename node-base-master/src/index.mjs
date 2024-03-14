@@ -6,24 +6,24 @@ import { initEnv } from "./env.mjs";
 initEnv();
 
 const {
-  HOST,
-  PORT,
-  SSL_KEY_FILENAME,
-  SSL_CERT_FILENAME,
+    HOST,
+    PORT,
+    SSL_KEY_FILENAME,
+    SSL_CERT_FILENAME,
 } = process.env;
 
 const pathToSslKey = path.join(import.meta.dirname, `../ssl/${SSL_KEY_FILENAME}`);
 const pathToSslCert = path.join(import.meta.dirname, `../ssl/${SSL_CERT_FILENAME}`);
 
 const ssl = {
-  key: fs.readFileSync(pathToSslKey),
-  cert: fs.readFileSync(pathToSslCert),
+    key: fs.readFileSync(pathToSslKey),
+    cert: fs.readFileSync(pathToSslCert),
 };
 
 const server = new H2Server({
-  ssl,
-  allowHttp1: true,
-  useWebSockets: true,
+    ssl,
+    allowHttp1: true,
+    useWebSockets: true,
 });
-const multiplexer = new Multiplexer(server, x => x)
+new Multiplexer(server, x => x)
 server.listen(PORT, HOST);
