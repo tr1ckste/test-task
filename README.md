@@ -4,7 +4,7 @@ Node version: `20.11.1`
 
 ## How to start the program
 
-Go to `chrome://flags/#allow-insecure-localhost` in chrome and turn `Allow invalid certificates for resources loaded from localhost.` to `Enabled`.
+Go to `chrome://flags/#allow-insecure-localhost` in chrome and turn `Allow invalid certificates for resources loaded from localhost` to `Enabled`.
 
 ```
 git submodule init
@@ -19,6 +19,7 @@ Backend start:
 cd node-base-master
 npm run ssl-gen
 npm run start
+```
 
 ```
 Frontend start:
