@@ -13,7 +13,7 @@ git submodule init
 git submodule update
 ```
 
-Then follow the instrution in the `README.md` file in mongodb-sample-dataset to run & fill with data mongodb.
+Then follow the instrution in the `README.md` file in `mongodb-sample-dataset` to run & fill with data mongodb.
 
 ### Backend start:
 
