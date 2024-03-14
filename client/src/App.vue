@@ -5,19 +5,36 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+    <div>
+      <h1>Films</h1>
     </div>
   </header>
-
-  <RouterView />
+  <main>
+    <template v-for="film in films">
+      <table style="width:100%">
+        <tr>
+          <th>Title</th>
+          <th>Year</th>
+          <th>Countries</th>
+          <th>Genres</th>
+          <th>IMDB rating</th>
+          <th>Cast</th>
+          <th>Directors</th>
+          <th>Plot</th>
+        </tr>
+        <tr>
+          <td>{{ film.title }}</td>
+          <td>{{ film.year }}</td>
+          <td><p v-for="country in film.countries">{{ country }}</p></td>
+          <td><p v-for="genre in film.genres">{{ genre }}</p></td>
+          <td>{{ film.imdb.rating }}</td>
+          <td><p v-for="actor in film.cast">{{ actor }}</p></td>
+          <td><p v-for="director in film.directors">{{ director }}</p></td>
+          <td>{{ film.plot }}</td>
+        </tr>
+      </table>
+    </template>
+  </main>
 </template>
 
 <style scoped>
@@ -26,34 +43,8 @@ header {
   max-height: 100vh;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
+table {
+  border: 1px solid white;
 }
 
 @media (min-width: 1024px) {
@@ -63,31 +54,22 @@ nav a:first-of-type {
     padding-right: calc(var(--section-gap) / 2);
   }
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
   header .wrapper {
     display: flex;
     place-items: flex-start;
     flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
   }
 }
 </style>
 <script>
 export default {
   name: 'App',
+  data: () => {
+    return {
+      films: [],
+    }
+  },
   async mounted() {
-    console.log('biba')
     try {
       const response = await fetch('https://localhost:5000/films?page=1&pageSize=5', {
         method: 'GET',
@@ -96,7 +78,7 @@ export default {
         }
       }).then(response => response.json());
 
-      console.log(response);
+      this.films.push(response);
     } catch (error) {
       console.error('Error:', error);
     }
