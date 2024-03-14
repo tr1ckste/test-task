@@ -1,8 +1,3 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
   <header>
     <div>
@@ -10,6 +5,10 @@ import HelloWorld from './components/HelloWorld.vue'
     </div>
   </header>
   <main>
+    <h2>Sort options</h2>
+    <div>
+      <div></div>
+    </div>
     <template v-for="film in films">
       <table style="width:100%">
         <tr>
@@ -34,6 +33,7 @@ import HelloWorld from './components/HelloWorld.vue'
         </tr>
       </table>
     </template>
+    <button @click="loadFilms">Load more</button>
   </main>
 </template>
 
@@ -67,20 +67,37 @@ export default {
   data: () => {
     return {
       films: [],
+      sortOptions: {
+        year: {
+          ascending: 'Oldest',
+          descending: 'Newest',
+          present: false,
+        },
+        imdbRating: {
+          ascending: 'Ascending',
+          descending: 'Descending',
+          present: false,
+        },
+      },
     }
   },
   async mounted() {
-    try {
-      const response = await fetch('https://localhost:5000/films?page=1&pageSize=5', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        }
-      }).then(response => response.json());
+    await this.loadMoreFilms();
+  },
+  methods: {
+    async loadMoreFilms() {
+      try {
+        const response = await fetch('https://localhost:5000/films?year+desc&=1&pageSize=5', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        }).then(response => response.json());
 
-      this.films.push(response);
-    } catch (error) {
-      console.error('Error:', error);
+        this.films.push(response);
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
   }
 }
