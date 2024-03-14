@@ -6,7 +6,8 @@ import {Http2Transport} from "./transporters/http2-transport.mjs";
 import {readWholeStream} from "./utils/read-data.mjs";
 import {constants as http2Constants} from "http2";
 
-import { command } from "./commands/test.mjs";
+import { route } from "./commands/index.mjs";
+import { getPathAndSearchParams } from "./utils/url.mjs";
 import { ConnectionContext } from "./context.mjs";
 
 const {
@@ -140,38 +141,21 @@ export class Multiplexer {
     /**
      * @param {ServerHttp2Session}session
      */
-    #h2StreamListener = (session, h2SessionData) => {
-        console.log('h2session')
+    #h2StreamListener = (session) => {
         /**
          * @type {Map<bigint, any>}
          */
         const sessionTransports = new Map();
-        console.log(h2SessionData);
+        const sessionContext = {};
         session.addListener("stream", async (stream, headers) => {
-            console.log('stream')
-            if (headers[this.#commandHeader] === "NOTIFY") {
-                try {
-                    const data = await readWholeStream(stream);
-                    let decodedData = CBORDecorder.decodeAllSync(data);
-                    // the decoded data has to be a message with the details of the continue notification (streamId etc)
-
-                } catch (e) {
-                    if (!stream.closed) {
-                        stream.respond({
-                            [HTTP2_HEADER_STATUS]: HTTP_STATUS_NOT_FOUND
-                        }, {endStream: true});
-                    }
-                }
-            }
+            const [path, searchParams] = getPathAndSearchParams(headers[':path']);
+            const connectionContext = new ConnectionContext(sessionContext, path, searchParams);
 
             const streamId = randomBigIntNotInKeys(sessionTransports); // this one is only for notification purposes.
-            sessionTransports.set(streamId, new Http2Transport(stream, headers, h2SessionData));
-
-            const context = new ConnectionContext(h2SessionData);
-            command.handle(sessionTransports.get(streamId), context);
-
-            // initialize command that handles session transport
-            // treat the continuation notifications right here, the rest will go to the service multiplexer.
+            const transport = new Http2Transport(stream, headers, sessionContext)
+            sessionTransports.set(streamId, transport);
+            const command = route(path);
+            command.handle(transport, connectionContext);
         });
     };
 

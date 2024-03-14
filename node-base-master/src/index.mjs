@@ -25,9 +25,5 @@ const server = new H2Server({
   allowHttp1: true,
   useWebSockets: true,
 });
-
 const multiplexer = new Multiplexer(server, x => x)
-
-
 server.listen(PORT, HOST);
-// JSON.stringify({ world: 'world' });
