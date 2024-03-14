@@ -8,6 +8,11 @@ const commands = {
     films,
 }
 
+/**
+ * 
+ * @param {string} path 
+ * @returns {Command} command is needed for specific route
+ */
 export const route = (path) => {
     const startIndex = path.startsWith('/') ? 1 : 0
     const arrayPath = path.split('/').slice(startIndex);
