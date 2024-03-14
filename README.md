@@ -21,9 +21,7 @@ npm run ssl-gen
 npm run start
 ```
 
-```
 Frontend start:
-
 ```
 cd client
 npm run dev
