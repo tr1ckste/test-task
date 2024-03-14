@@ -1,11 +1,18 @@
 import { Command } from "../command.mjs";
-import { getCollection } from "../db/index.mjs";
+import { getCollection, sortingMap } from "../db/index.mjs";
 import { CORS } from "../utils/cors.mjs";
 import { checkIfEqual } from "../utils/common.mjs";
 
-const createFilmCursorAndSetItToCtx = (context) => {
+const createFilmCursorAndSetItToCtx = (context, searchParams) => {
+    const sortOptions = {}
+    if (searchParams.year) sortOptions.year = sortingMap[searchParams.year];
+    if (searchParams.imdbRating) {
+        sortOptions['imdb.rating'] = sortingMap[searchParams.imdbRating];
+    }
+    console.log(sortOptions);
     const collection = getCollection("sample_mflix", "movies");
-    const cursor = collection.find({});
+    const cursor = collection.find({}).sort(sortOptions);
+
     context.cursor = cursor;
     return cursor;
 }
@@ -27,7 +34,7 @@ export default new Command({
         );
         const needToResetCursor = !(searchParamsIsEqual && context.cursor);
 
-        if (needToResetCursor) createFilmCursorAndSetItToCtx(context);
+        if (needToResetCursor) createFilmCursorAndSetItToCtx(context, context.requestSearchParams);
 
         const { cursor } = context;
         if (!(await cursor.hasNext())) {

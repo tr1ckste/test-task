@@ -8,7 +8,7 @@
     <h2>Sort options</h2>
     <div>
       <div class="flex" v-for="sortOptionName in Object.keys(sortOptions)">
-        <input type="checkbox" :id="sortOptionName" :value="sortOptionName" v-model="sortOptions[sortOptionName].present">
+        <input @click="clearFilms" type="checkbox" :id="sortOptionName" :value="sortOptionName" v-model="sortOptions[sortOptionName].present">
         <p>{{ sortOptionName }}</p>
       </div>
       <div class="flex options">
@@ -91,16 +91,16 @@ export default {
       films: [],
       sortOptions: {
         year: {
-          ascending: 'Oldest',
-          descending: 'Newest',
+          asc: 'Oldest',
+          desc: 'Newest',
           present: false,
-          current: 'descending',
+          current: 'desc',
         },
         imdbRating: {
-          ascending: 'Ascending',
-          descending: 'Descending',
+          asc: 'Ascending',
+          desc: 'Descending',
           present: false,
-          current: 'descending',
+          current: 'desc',
         },
       },
     }
@@ -111,22 +111,34 @@ export default {
   methods: {
     async loadMoreFilms() {
       try {
-        const response = await fetch('https://localhost:5000/films?year+desc&=1&pageSize=5', {
+        let url = 'https://localhost:5000/films';
+        const entries = Object.entries(this.sortOptions).filter(([, options]) => options.present);
+        if (entries.length) url += '?';
+        for (const index in entries) {
+          const [name, options] = entries[index];
+          if (+index !== 0) url += '&';
+          url += `${name}=${options.current}`;
+        };
+        const response = await fetch(url, {
           method: 'GET',
           headers: {
             'Accept': 'application/json'
           }
         }).then(response => response.json());
-
+        console.log(response);
         this.films.push(response);
       } catch (error) {
         console.error('Error:', error);
       }
     },
     changeOrder(sortOption) {
-      if (sortOption.current === 'descending') sortOption.current = 'ascending'
-      else sortOption.current = 'descending'
+      if (sortOption.current === 'desc') sortOption.current = 'asc';
+      else sortOption.current = 'desc';
+      this.clearFilms();
     },
+    clearFilms() {
+      this.films = [];
+    }
   }
 }
 </script>

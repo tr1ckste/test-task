@@ -2,6 +2,11 @@ import { MongoClient, ServerApiVersion } from "mongodb";
 import { initEnv } from "../env.mjs";
 initEnv();
 
+export const sortingMap = {
+    asc: 1,
+    desc: -1,
+};
+
 const uri = process.env.MONGO_CONNECTION_URL;
 export const client = new MongoClient(uri,  {
     serverApi: {
