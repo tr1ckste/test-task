@@ -3,6 +3,7 @@ import path from "path";
 import { H2Server } from "./server.mjs";
 import { Multiplexer } from "./multiplexer.mjs";
 import { initEnv } from "./env.mjs";
+import { client } from "./db/index.mjs";
 initEnv();
 
 const {
@@ -14,6 +15,8 @@ const {
 
 const pathToSslKey = path.join(import.meta.dirname, `../ssl/${SSL_KEY_FILENAME}`);
 const pathToSslCert = path.join(import.meta.dirname, `../ssl/${SSL_CERT_FILENAME}`);
+
+await client.connect();
 
 const ssl = {
     key: fs.readFileSync(pathToSslKey),

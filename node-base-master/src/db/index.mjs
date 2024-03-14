@@ -10,3 +10,11 @@ export const client = new MongoClient(uri,  {
         deprecationErrors: true,
     }
 });
+
+/**
+ *
+ * @param {string} database
+ * @param {string} collection
+ */
+export const getCollection = (database, collection) =>
+    client.db(database).collection(collection);

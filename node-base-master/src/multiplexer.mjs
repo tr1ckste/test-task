@@ -147,6 +147,7 @@ export class Multiplexer {
          */
         const sessionTransports = new Map();
         const sessionContext = {};
+        console.log('session');
         session.addListener("stream", async (stream, headers) => {
             const [path, searchParams] = getPathAndSearchParams(headers[':path']);
             const connectionContext = new ConnectionContext(sessionContext, path, searchParams);

@@ -57,15 +57,26 @@ export class ConnectionContext {
      * @param {URLSearchParams} searchParams
      */
     set searchParams(searchParams) {
-        this.#sessionContext.searchParams = searchParams;
+        this.#sessionContext[path].searchParams = searchParams;
+    }
+
+    /**
+     * @returns {object}
+     */
+    get sessionSearchParams() {
+        const { path } = this.#requestContext;
+        if (this.#sessionContext[path].searchParams) {
+            return this.#sessionContext[path].searchParams;
+        }
+        return null;
     }
 
     /**
      * @returns {URLSearchParams}
      */
-    get searchParams() {
-        if (this.#sessionContext.searchParams) {
-            return this.#sessionContext.searchParams;
+    get requestSearchParams() {
+        if (this.#requestContext.searchParams) {
+            return this.#requestContext.searchParams;
         }
         return null;
     }

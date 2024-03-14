@@ -1,6 +1,14 @@
 import { Command } from "../command.mjs";
-import { client } from "../db/index.mjs";
+import { getCollection } from "../db/index.mjs";
 import { CORS } from "../utils/cors.mjs";
+import { checkIfEqual } from "../utils/common.mjs";
+
+const createFilmCursorAndSetItToCtx = (context) => {
+    const collection = getCollection("sample_mflix", "movies");
+    const cursor = collection.find({});
+    context.cursor = cursor;
+    return cursor;
+}
 
 export default new Command({
     handler: async (dataTransport, context) => {
@@ -13,10 +21,16 @@ export default new Command({
             endStream: false,
             waitForTrailers: false
         });
-        await client.connect();
-        const db = client.db("sample_mflix");
-        const collection = db.collection('movies');
-        const cursor = collection.find({});
+        const searchParamsIsEqual = checkIfEqual(
+            context.requestSearchParams,
+            context.sessionSearchParams
+        );
+        const needToResetCursor = !(searchParamsIsEqual && context.cursor);
+        console.log(needToResetCursor);
+
+        if (needToResetCursor) createFilmCursorAndSetItToCtx(context);
+
+        const { cursor } = context;
         if (!(await cursor.hasNext())) {
             dataTransport.end();
             context.done = true;
