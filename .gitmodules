@@ -1,0 +1,3 @@
+[submodule "mongodb-sample-dataset"]
+	path = mongodb-sample-dataset
+	url = git@github.com:neelabalan/mongodb-sample-dataset.git

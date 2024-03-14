@@ -9,7 +9,6 @@ const createFilmCursorAndSetItToCtx = (context, searchParams) => {
     if (searchParams.imdbRating) {
         sortOptions['imdb.rating'] = sortingMap[searchParams.imdbRating];
     }
-    console.log(sortOptions);
     const collection = getCollection("sample_mflix", "movies");
     const cursor = collection.find({}).sort(sortOptions);
 
