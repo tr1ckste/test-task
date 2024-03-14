@@ -7,20 +7,29 @@
   <main>
     <h2>Sort options</h2>
     <div>
-      <div></div>
+      <div class="flex" v-for="sortOptionName in Object.keys(sortOptions)">
+        <input type="checkbox" :id="sortOptionName" :value="sortOptionName" v-model="sortOptions[sortOptionName].present">
+        <p>{{ sortOptionName }}</p>
+      </div>
+      <div class="flex options">
+        <template v-for="sortOptionName in Object.keys(sortOptions).filter(sortOptionName => sortOptions[sortOptionName].present)">
+          <div class="button" @click="changeOrder(sortOptions[sortOptionName])">{{ `${sortOptionName} : ${sortOptions[sortOptionName][sortOptions[sortOptionName].current]}` }}</div>
+        </template>
+      </div>
     </div>
-    <template v-for="film in films">
-      <table style="width:100%">
-        <tr>
-          <th>Title</th>
-          <th>Year</th>
-          <th>Countries</th>
-          <th>Genres</th>
-          <th>IMDB rating</th>
-          <th>Cast</th>
-          <th>Directors</th>
-          <th>Plot</th>
-        </tr>
+    <button class="load" @click="loadMoreFilms">Load more | Reload when sort settings changed</button>
+    <table style="width:100%">
+      <tr>
+        <th>Title</th>
+        <th>Year</th>
+        <th>Countries</th>
+        <th>Genres</th>
+        <th>IMDB rating</th>
+        <th>Cast</th>
+        <th>Directors</th>
+        <th>Plot</th>
+      </tr>
+      <template v-for="film in films">
         <tr>
           <td>{{ film.title }}</td>
           <td>{{ film.year }}</td>
@@ -31,9 +40,9 @@
           <td><p v-for="director in film.directors">{{ director }}</p></td>
           <td>{{ film.plot }}</td>
         </tr>
-      </table>
-    </template>
-    <button @click="loadFilms">Load more</button>
+      </template>
+    </table>
+    <button class="load" @click="loadMoreFilms">Load more | Reload when sort settings changed</button>
   </main>
 </template>
 
@@ -45,6 +54,19 @@ header {
 
 table {
   border: 1px solid white;
+}
+
+.flex {
+  display: flex;
+  gap: 10px;
+}
+
+.button {
+  cursor: pointer;
+}
+
+.load {
+  margin: 10px 0;
 }
 
 @media (min-width: 1024px) {
@@ -72,11 +94,13 @@ export default {
           ascending: 'Oldest',
           descending: 'Newest',
           present: false,
+          current: 'descending',
         },
         imdbRating: {
           ascending: 'Ascending',
           descending: 'Descending',
           present: false,
+          current: 'descending',
         },
       },
     }
@@ -98,7 +122,11 @@ export default {
       } catch (error) {
         console.error('Error:', error);
       }
-    }
+    },
+    changeOrder(sortOption) {
+      if (sortOption.current === 'descending') sortOption.current = 'ascending'
+      else sortOption.current = 'descending'
+    },
   }
 }
 </script>
